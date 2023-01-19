@@ -1,0 +1,53 @@
+currentBuild.rawBuild.project.description = 'Pipeline for exporting Grafana dashboards'
+
+pipeline {
+  agent { label 'docker-agents' } 
+  options {
+    buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
+  }
+  parameters {
+    booleanParam defaultValue: true, description: 'Export dashboards without commiting to git', name: 'dryRun'
+    booleanParam defaultValue: true, description: 'Clean dashboards repo before exporting', name: 'cleanCommit'
+    string defaultValue: '', description: 'Dashboards repo url', name: 'gitUrl', trim: true
+    string defaultValue: '', description: 'Dashboards repo branch', name: 'gitBranch', trim: true
+    string defaultValue: '', description: 'Git credentials id', name: 'gitCredentials', trim: true
+    string defaultValue: '', description: 'Git user email', name: 'gitUserEmail', trim: true
+    string defaultValue: '', description: 'Git user name', name: 'gitUserName', trim: true    
+    string defaultValue: '', description: 'Grafana url', name: 'grafanaUrl', trim: true
+    string defaultValue: '', description: 'Grafana api key id', name: 'grafanaCredentials', trim: true
+  }
+  stages {
+    stage('Export') {
+      agent {
+        dockerfile {
+          reuseNode true
+        }
+      }
+      steps {
+        dir('./dashboards') {
+          checkout([$class: 'GitSCM', branches: [[name: '*/$gitBranch']], extensions: [[$class: 'LocalBranch', localBranch: gitBranch]], userRemoteConfigs: [[credentialsId: gitCredentials, url: gitUrl]]])
+          script {
+            if(cleanCommit == 'true') sh 'rm -f *.json'
+          }
+        }
+        withCredentials([string(credentialsId: grafanaCredentials, variable: 'grafanaApiKey')]) {
+          sh './scripts/terraform.sh -d "./terraform/dashboard-export/" -v "-var grafana_auth=$grafanaApiKey -var grafana_url=$grafanaUrl"'
+          sh './scripts/dashboard-export.sh -sf "./terraform/dashboard-export/terraform.tfstate" -od "./dashboards"'
+        }
+      }
+    }
+    stage('Commit') {
+      agent {
+        dockerfile {
+          reuseNode true
+        }
+      }
+      when {
+        equals expected: 'false', actual: dryRun
+      }
+      steps {
+        sh './scripts/dashboard-commit.sh -od "./dashboards" -ue "$gitUserEmail" -un "$gitUserName"'
+      }
+    }
+  }
+}
