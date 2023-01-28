@@ -9,6 +9,7 @@ pipeline {
     string defaultValue: '', description: 'List of dashboards to import (e.g. "dashboard-1.json","dashboard-2.json"...)', name: 'grafanaDashboards', trim: true
     string defaultValue: '', description: 'Dashboards repo url', name: 'gitUrl', trim: true
     string defaultValue: '', description: 'Dashboards repo branch', name: 'gitBranch', trim: true
+    string defaultValue: '', description: 'Source dir in dashboards repo', name: 'gitDir', trim: true
     string defaultValue: '', description: 'Git credentials id', name: 'gitCredentials', trim: true
     string defaultValue: '', description: 'Grafana url', name: 'grafanaUrl', trim: true
     string defaultValue: '', description: 'Grafana api key id', name: 'grafanaCredentials', trim: true
@@ -23,7 +24,7 @@ pipeline {
           checkout([$class: 'GitSCM', branches: [[name: '*/$gitBranch']], extensions: [[$class: 'LocalBranch', localBranch: gitBranch]], userRemoteConfigs: [[credentialsId: gitCredentials, url: gitUrl]]])
         }
         withCredentials([string(credentialsId: grafanaCredentials, variable: 'grafanaApiKey')]) {
-          sh './scripts/terraform.sh -d "./terraform/dashboard-import/" -v "-var grafana_auth=$grafanaApiKey -var grafana_url=$grafanaUrl -var dashboards_folder=../../dashboards/ -var dashboard_files=[$grafanaDashboards]"'
+          sh './scripts/terraform.sh -d "./terraform/dashboard-import/" -v "-var grafana_auth=$grafanaApiKey -var grafana_url=$grafanaUrl -var dashboards_folder=../../dashboards/$gitDir$([ ${getDir#${getDir%?}} != \"/\" ] && printf \"/\") -var dashboard_files=[$grafanaDashboards]"'
         }
       }
     }

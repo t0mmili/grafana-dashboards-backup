@@ -10,6 +10,7 @@ pipeline {
     booleanParam defaultValue: true, description: 'Clean dashboards repo before exporting', name: 'cleanCommit'
     string defaultValue: '', description: 'Dashboards repo url', name: 'gitUrl', trim: true
     string defaultValue: '', description: 'Dashboards repo branch', name: 'gitBranch', trim: true
+    string defaultValue: '', description: 'Target dir in dashboards repo', name: 'gitDir', trim: true
     string defaultValue: '', description: 'Git credentials id', name: 'gitCredentials', trim: true
     string defaultValue: '', description: 'Git user email', name: 'gitUserEmail', trim: true
     string defaultValue: '', description: 'Git user name', name: 'gitUserName', trim: true    
@@ -26,13 +27,12 @@ pipeline {
       steps {
         dir('./dashboards') {
           checkout([$class: 'GitSCM', branches: [[name: '*/$gitBranch']], extensions: [[$class: 'LocalBranch', localBranch: gitBranch]], userRemoteConfigs: [[credentialsId: gitCredentials, url: gitUrl]]])
-          script {
-            if(cleanCommit == 'true') sh 'rm -f *.json'
-          }
+          sh 'if [ $cleanCommit == "true" ] && [ -d "$gitDir" ]; then rm -f $gitDir$([ ${gitDir#${gitDir%?}} != "/" ] && printf "/")*.json; fi'
+          sh 'if [ ! -d "$gitDir" ]; then mkdir $gitDir; fi'
         }
         withCredentials([string(credentialsId: grafanaCredentials, variable: 'grafanaApiKey')]) {
           sh './scripts/terraform.sh -d "./terraform/dashboard-export/" -v "-var grafana_auth=$grafanaApiKey -var grafana_url=$grafanaUrl"'
-          sh './scripts/dashboard-export.sh -sf "./terraform/dashboard-export/terraform.tfstate" -od "./dashboards"'
+          sh './scripts/dashboard-export.sh -sf "./terraform/dashboard-export/terraform.tfstate" -od "./dashboards/$gitDir"'
         }
       }
     }
