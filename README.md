@@ -21,9 +21,9 @@ Jenkins                                                                         
 * Git repo for exported dashboards, as well as ssh keys for read/write access.
 
 ## Installation
-1. Fork this repo.
+1. Create copy of this repo.
 2. Update Jenkins pipelines with your custom configuration, if necessary.
 3. Add Grafana and git credentials to Jenkins Credential store. 
-4. Add export and import pipelines as two separate Multibranch pipelines.
+4. Add export and import as two separate Multibranch pipelines.
 > **NOTE**  
-> Initial run of both jobs will always fail, since job parameters need to be populated first.
+> Initial run of both jobs will likely fail, since job parameters need to be populated first.
