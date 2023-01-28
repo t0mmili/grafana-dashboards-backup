@@ -15,6 +15,26 @@ pipeline {
     string defaultValue: '', description: 'Grafana api key id', name: 'grafanaCredentials', trim: true
   }
   stages {
+    stage('Pre-check') {
+      agent any
+      when {
+        anyOf {
+          equals expected: '', actual: grafanaDashboards
+          equals expected: '', actual: gitUrl
+          equals expected: '', actual: gitBranch
+          equals expected: '', actual: gitCredentials
+          equals expected: '', actual: grafanaUrl
+        }
+      }
+      steps {
+        error 'One or more of the required job parameters is empty.'
+      }
+      post {
+        cleanup {
+          cleanWs()
+        }
+      }
+    }
     stage('Import') {
       agent {
         dockerfile true
