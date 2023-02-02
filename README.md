@@ -23,6 +23,9 @@ Jenkins                                                                         
 ## Installation
 1. Create copy of this repo.
 2. Update Jenkins pipelines with your custom configuration, if necessary.
+> **NOTE**  
+> Remember to modify bash scripts permissions:  
+> `git update-index --add --chmod=+x my-script.sh`
 3. Add Grafana and git credentials to Jenkins Credential store. 
 4. Add export and import as two separate Multibranch pipelines.
 > **NOTE**  
