@@ -7,6 +7,7 @@ pipeline {
   }
   parameters {
     string defaultValue: '', description: 'List of dashboards to import (e.g. "dashboard-1.json","dashboard-2.json"...)', name: 'grafanaDashboards', trim: true
+    booleanParam defaultValue: false, description: 'Overwrite existing dashboards', name: 'overwriteDashboards'
     string defaultValue: '', description: 'Dashboards repo url', name: 'gitUrl', trim: true
     string defaultValue: '', description: 'Dashboards repo branch', name: 'gitBranch', trim: true
     string defaultValue: '', description: 'Source dir in dashboards repo', name: 'gitDir', trim: true
@@ -44,7 +45,7 @@ pipeline {
           checkout([$class: 'GitSCM', branches: [[name: '*/$gitBranch']], extensions: [[$class: 'LocalBranch', localBranch: gitBranch]], userRemoteConfigs: [[credentialsId: gitCredentials, url: gitUrl]]])
         }
         withCredentials([string(credentialsId: grafanaCredentials, variable: 'grafanaApiKey')]) {
-          sh './scripts/terraform.sh -d "./terraform/dashboard-import/" -v "-var grafana_auth=$grafanaApiKey -var grafana_url=$grafanaUrl -var dashboards_folder=../../dashboards/$gitDir$([ ${gitDir#${gitDir%?}} != \"/\" ] && printf \"/\") -var dashboard_files=[$grafanaDashboards]"'
+          sh './scripts/terraform.sh -d "./terraform/dashboard-import/" -v "-var grafana_auth=$grafanaApiKey -var grafana_url=$grafanaUrl -var dashboard_overwrite=$overwriteDashboards -var dashboards_folder=../../dashboards/$gitDir$([ ${gitDir#${gitDir%?}} != \"/\" ] && printf \"/\") -var dashboard_files=[$grafanaDashboards]"'
         }
       }
     }

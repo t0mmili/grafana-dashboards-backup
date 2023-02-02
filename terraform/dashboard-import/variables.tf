@@ -17,3 +17,9 @@ variable "dashboard_files" {
   description = "List of dashboard files to import"
   type        = list(string)
 }
+
+variable "dashboard_overwrite" {
+  description = "Whether to overwrite existing dashboard with newer version"
+  type        = bool
+  default     = false
+}
