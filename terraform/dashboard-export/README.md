@@ -34,6 +34,6 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_grafana_dashboards"></a> [grafana\_dashboards](#output\_grafana\_dashboards) | Complete dashboards models with corresponding uids |
+| <a name="output_grafana_dashboards"></a> [grafana\_dashboards](#output\_grafana\_dashboards) | Complete dashboards models with corresponding titles |
 | <a name="output_grafana_folders_titles"></a> [grafana\_folders\_titles](#output\_grafana\_folders\_titles) | List of Grafana folders |
 <!-- END_TF_DOCS -->

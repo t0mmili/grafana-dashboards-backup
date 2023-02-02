@@ -4,9 +4,9 @@ output "grafana_folders_titles" {
 }
 
 output "grafana_dashboards" {
-  description = "Complete dashboards models with corresponding uids"
+  description = "Complete dashboards models with corresponding titles"
   value = {
-    uid    = data.grafana_dashboards.from_folder_ids.dashboards[*].uid
+    title  = data.grafana_dashboards.from_folder_ids.dashboards[*].title
     config = data.grafana_dashboard.from_dashboard_uids[*].config_json
   }
 }
