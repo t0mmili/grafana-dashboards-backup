@@ -13,7 +13,7 @@ RUN apk add --no-cache \
 RUN /bin/ash -c 'adduser -h /home/jenkins -g jenkins -s /bin/ash -D -u 1000 jenkins;'
 
 # Install Terraform
-RUN RELEASE="1.3.7" && \
+RUN RELEASE="1.3.9" && \
     wget https://releases.hashicorp.com/terraform/${RELEASE}/terraform_${RELEASE}_linux_amd64.zip && \
     unzip terraform_${RELEASE}_linux_amd64.zip && \
     rm terraform_${RELEASE}_linux_amd64.zip && \
