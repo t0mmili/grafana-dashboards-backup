@@ -29,16 +29,20 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-counter=$(terraform output -json -no-color -state="$tf_state" | jq -j '.grafana_dashboards.value.title | length')
+dashboards_title=$(terraform output -json -no-color -state="$tf_state" | jq -j '.grafana_dashboards.value.title')
+dashboards_config=$(terraform output -json -no-color -state="$tf_state" | jq -j '.grafana_dashboards.value.config')
+counter=$(echo $dashboards_title | jq -j 'length')
 
 if [ $counter -gt 0 ]; then
 	i=0
 	while [ $i -lt $counter ]; do
-		title=$(terraform output -json -no-color -state="$tf_state" | jq -j --arg i "$i" '.grafana_dashboards.value.title[$i | tonumber] | gsub("\\s";"-") | ascii_downcase')
-		config=$(terraform output -json -no-color -state="$tf_state" | jq -j --arg i "$i" '.grafana_dashboards.value.config[$i | tonumber]')
+		title=$(echo $dashboards_title | jq -j --arg i "$i" '.[$i | tonumber] | gsub("\\(|\\)|\\[|\\]";"") | gsub("_|-";" ") | gsub("\\s{2,}";" ") | gsub("\\s";"-") | ascii_downcase')
+		config=$(echo $dashboards_config | jq -j --arg i "$i" '.[$i | tonumber]')
+		uid=$(echo $config | jq -j '.uid')
 		echo $config > "$out_dir$([ ${out_dir#${out_dir%?}} != '/' ] && printf '/')$title.json"
+		echo "Saved dashboard with uid=$uid to file $title.json"
 		let "i+=1"
-	done 
+	done
 else
 	echo "Sorry, no dashboards to export this time..."
 fi
