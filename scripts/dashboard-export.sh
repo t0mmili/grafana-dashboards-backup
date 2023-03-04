@@ -36,9 +36,9 @@ counter=$(echo $dashboards_title | jq -j 'length')
 if [ $counter -gt 0 ]; then
 	i=0
 	while [ $i -lt $counter ]; do
-		uid=$(echo $dashboards_config | jq -j --arg i "$i" '.[$i | tonumber] | fromjson | .uid')
 		title=$(echo $dashboards_title | jq -j --arg i "$i" '.[$i | tonumber] | gsub("\\(|\\)|\\[|\\]";"") | gsub("_|-";" ") | gsub("\\s{2,}";" ") | gsub("\\s";"-") | ascii_downcase')
 		config=$(echo $dashboards_config | jq -j --arg i "$i" '.[$i | tonumber]')
+		uid=$(echo $config | jq -j '.uid')
 		echo $config > "$out_dir$([ ${out_dir#${out_dir%?}} != '/' ] && printf '/')$title.json"
 		echo "Saved dashboard with uid=$uid to file $title.json"
 		let "i+=1"
