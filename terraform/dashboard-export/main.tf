@@ -6,7 +6,7 @@ provider "grafana" {
 data "grafana_folders" "all" {}
 
 data "grafana_dashboards" "from_folder_ids" {
-  folder_ids = data.grafana_folders.all.folders[*].id
+  folder_ids = concat(data.grafana_folders.all.folders[*].id, [0])
 }
 
 data "grafana_dashboard" "from_dashboard_uids" {
