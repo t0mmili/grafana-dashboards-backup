@@ -44,5 +44,5 @@ if [ $counter -gt 0 ]; then
 		let "i+=1"
 	done
 else
-  echo "Sorry, no dashboards to export this time..."
+	echo "Sorry, no dashboards to export this time..."
 fi
