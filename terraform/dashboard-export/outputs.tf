@@ -1,6 +1,6 @@
 output "grafana_folders_titles" {
   description = "List of Grafana folders"
-  value       = data.grafana_folders.all.folders[*].title
+  value       = concat(data.grafana_folders.all.folders[*].title, ["General"])
 }
 
 output "grafana_dashboards" {
