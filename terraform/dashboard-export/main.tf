@@ -1,16 +1,17 @@
 provider "grafana" {
-  url  = var.grafana_url
-  auth = var.grafana_auth
+  auth    = var.grafana_auth
+  retries = 3
+  url     = var.grafana_url
 }
 
-data "grafana_folders" "all" {}
+data "grafana_folders" "this" {}
 
-data "grafana_dashboards" "from_folder_ids" {
-  folder_ids = concat(data.grafana_folders.all.folders[*].id, [0])
+data "grafana_dashboards" "this" {
+  folder_ids = concat(data.grafana_folders.this.folders[*].id, [0])
 }
 
-data "grafana_dashboard" "from_dashboard_uids" {
-  count = length(data.grafana_dashboards.from_folder_ids.dashboards[*].uid)
+data "grafana_dashboard" "this" {
+  count = length(data.grafana_dashboards.this.dashboards[*].uid)
 
-  uid = element(data.grafana_dashboards.from_folder_ids.dashboards[*].uid, count.index)
+  uid = element(data.grafana_dashboards.this.dashboards[*].uid, count.index)
 }

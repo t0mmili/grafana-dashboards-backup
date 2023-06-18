@@ -1,8 +1,8 @@
 output "grafana_dashboards" {
   description = "Imported dashboards information"
   value = {
-    dashboard_id = grafana_dashboard.from_json[*].dashboard_id
-    url          = grafana_dashboard.from_json[*].url
-    version      = grafana_dashboard.from_json[*].version
+    dashboard_id = grafana_dashboard.this[*].dashboard_id
+    url          = grafana_dashboard.this[*].url
+    version      = grafana_dashboard.this[*].version
   }
 }
