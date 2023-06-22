@@ -1,12 +1,12 @@
 output "grafana_folders_titles" {
   description = "List of Grafana folders"
-  value       = concat(data.grafana_folders.all.folders[*].title, ["General"])
+  value       = concat(data.grafana_folders.this.folders[*].title, ["General"])
 }
 
 output "grafana_dashboards" {
   description = "Complete dashboards models with corresponding titles"
   value = {
-    title  = data.grafana_dashboards.from_folder_ids.dashboards[*].title
-    config = data.grafana_dashboard.from_dashboard_uids[*].config_json
+    title  = data.grafana_dashboards.this.dashboards[*].title
+    config = data.grafana_dashboard.this[*].config_json
   }
 }

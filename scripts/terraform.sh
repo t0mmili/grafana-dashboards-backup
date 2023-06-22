@@ -32,5 +32,5 @@ done
 cd "$tf_dir"
 
 terraform init -input=false -no-color
-terraform plan -no-color -out=tfplan $([ ! -z ${tf_vars#${tf_vars%?}} ] && printf "$tf_vars")
-terraform apply -auto-approve -no-color tfplan
+terraform plan -input=false -no-color -out=tfplan $([ ! -z ${tf_vars#${tf_vars%?}} ] && printf "$tf_vars")
+terraform apply -input=false -auto-approve -no-color tfplan

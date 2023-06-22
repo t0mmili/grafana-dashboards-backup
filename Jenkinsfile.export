@@ -45,6 +45,9 @@ pipeline {
           reuseNode true
         }
       }
+      environment {
+        TF_IN_AUTOMATION = 'true'
+      }
       steps {
         dir('./dashboards') {
           checkout([$class: 'GitSCM', branches: [[name: '*/$gitBranch']], extensions: [[$class: 'LocalBranch', localBranch: gitBranch]], userRemoteConfigs: [[credentialsId: gitCredentials, url: gitUrl]]])
