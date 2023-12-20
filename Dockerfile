@@ -1,5 +1,6 @@
 # Base image
 FROM hashicorp/terraform:1.5.7
+ENTRYPOINT [""]
 
 # Install applications
 RUN apk add --no-cache \
