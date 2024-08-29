@@ -1,5 +1,5 @@
 # Base image
-FROM hashicorp/terraform:1.6
+FROM hashicorp/terraform:1.9
 ENTRYPOINT [""]
 
 # Install applications
